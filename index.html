@@ -73,7 +73,9 @@
   <input type="email" name="email" placeholder="Enter your email" required>
   <button type="submit">Get Early Access</button>
 </form>
+
 <button id="subscribe-btn">Start $2 Trial</button>
+
 <script>
   document.getElementById("subscribe-btn").addEventListener("click", async () => {
     const response = await fetch("http://localhost:4242/create-checkout-session", {
