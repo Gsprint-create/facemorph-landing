@@ -11,7 +11,7 @@ from insightface.model_zoo.inswapper import INSwapper
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key'
+app.secret_key = ''
 
 UPLOAD_FOLDER = 'uploads'
 RESULT_FOLDER = 'results'
