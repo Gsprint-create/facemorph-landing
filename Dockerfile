@@ -1,10 +1,12 @@
-# Use an official Python base image
-FROM python:3.10-slim
+# Use Python Bullseye base (not slim)
+FROM python:3.10-bullseye
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    build-essential \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -21,8 +23,8 @@ COPY . .
 # Expose port
 EXPOSE 8080
 
-# Environment for Flask
+# Set environment variables
 ENV PORT=8080
 
-# Command to run your app
+# Start app
 CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080"]
