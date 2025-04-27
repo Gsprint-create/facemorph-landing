@@ -9,6 +9,25 @@ from werkzeug.utils import secure_filename
 from insightface.app import FaceAnalysis
 from insightface.model_zoo.inswapper import INSwapper
 from functools import wraps
+import os
+import urllib.request
+
+MODEL_DIR = os.path.expanduser("~/.insightface/models/")
+MODEL_PATH = os.path.join(MODEL_DIR, "inswapper_128.onnx")
+
+# Make sure model folder exists
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+# Download model if not exists
+if not os.path.exists(MODEL_PATH):
+    print("🔄 Downloading InsightFace model...")
+    url = "https://github.com/deepinsight/insightface/releases/download/v0.7/inswapper_128.onnx"
+    urllib.request.urlretrieve(url, MODEL_PATH)
+    print("✅ Model downloaded!")
+
+# Then load
+from insightface.model_zoo.inswapper import INSwapper
+swapper = INSwapper(MODEL_PATH)
 
 app = Flask(__name__)
 
@@ -206,5 +225,9 @@ def init_db():
 
 init_db()
 
+import os
+
 if __name__ == '__main__':
-    app.run(debug=True, port=4242)
+    port = int(os.environ.get('PORT', 4242))  # fallback for local
+    app.run(debug=True, host='0.0.0.0', port=port)
+
