@@ -21,7 +21,7 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 # Download model if not exists
 if not os.path.exists(MODEL_PATH):
     print("🔄 Downloading InsightFace model...")
-    url = "https://github.com/deepinsight/insightface/releases/download/v0.7/inswapper_128.onnx"
+    https://drive.google.com/file/d/1krOLgjW2tAPaqV-Bw4YALz0xT5zlb5HF/view
     urllib.request.urlretrieve(url, MODEL_PATH)
     print("✅ Model downloaded!")
 
