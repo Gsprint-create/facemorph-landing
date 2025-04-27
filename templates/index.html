@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Face Swap</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+      background: #f0f0f0;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    .center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: white;
+      max-width: 500px;
+      margin: auto;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="center">
+    <h1>Face Swap Tool</h1>
+    <form method="POST" action="/swap_faces" enctype="multipart/form-data">
+      <label>Select Source Image(s):</label>
+      <input type="file" name="photoA" accept="image/*" multiple required>
+      <label>Select Target Image or Video:</label>
+      <input type="file" name="photoB" accept="image/*,video/mp4" required>
+      <label>Swap Strength:</label>
+      <input type="range" name="strength" min="0" max="1" step="0.1" value="1">
+      <button type="submit">Swap</button>
+    </form>
+    <form action="/logout" method="POST"><button>Logout</button></form>
+  </div>
+</body>
+</html>

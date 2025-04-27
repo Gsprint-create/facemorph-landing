@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Preview</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; background: #f9f9f9; }
+    img, video { max-width: 90%; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+    a.button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #4f46e5;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Your Result</h1>
+  {% if is_video %}
+    <video controls><source src="{{ url_for('serve_result', filename=filename) }}" type="video/mp4"></video>
+  {% else %}
+    <img src="{{ url_for('serve_result', filename=filename) }}" alt="Result Image">
+  {% endif %}
+  <div>
+    <a href="{{ url_for('serve_result', filename=filename) }}" download class="button">⬇ Download</a>
+    <a href="/faceswap" class="button">🔁 Try Another</a>
+  </div>
+</body>
+</html>
