@@ -21,7 +21,7 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 # Download model if not exists
 if not os.path.exists(MODEL_PATH):
     print("🔄 Downloading InsightFace model...")
-    https://drive.google.com/file/d/1krOLgjW2tAPaqV-Bw4YALz0xT5zlb5HF/view
+    https://drive.usercontent.google.com/download?id=1krOLgjW2tAPaqV-Bw4YALz0xT5zlb5HF&export=download&authuser=0
     urllib.request.urlretrieve(url, MODEL_PATH)
     print("✅ Model downloaded!")
 
