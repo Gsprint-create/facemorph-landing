@@ -9,39 +9,41 @@ from werkzeug.utils import secure_filename
 from insightface.app import FaceAnalysis
 from insightface.model_zoo.inswapper import INSwapper
 from functools import wraps
-import os
 import urllib.request
+from dotenv import load_dotenv
 
+# === Load environment variables ===
+load_dotenv()
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_dev_key')  # fallback for dev
+
+# === Flask App Setup ===
+app = Flask(__name__)
+app.secret_key = SECRET_KEY
+
+# === File and Model Paths ===
+UPLOAD_FOLDER = 'uploads'
+RESULT_FOLDER = 'results'
 MODEL_DIR = os.path.expanduser("~/.insightface/models/")
 MODEL_PATH = os.path.join(MODEL_DIR, "inswapper_128.onnx")
 
-# Make sure model folder exists
+# === Ensure folders exist ===
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(RESULT_FOLDER, exist_ok=True)
 os.makedirs(MODEL_DIR, exist_ok=True)
 
-# Download model if not exists
+# === Download model if missing ===
 if not os.path.exists(MODEL_PATH):
     print("🔄 Downloading InsightFace model...")
     url = "https://drive.google.com/uc?export=download&id=1krOLgjW2tAPaqV-Bw4YALz0xT5zlb5HF"
     urllib.request.urlretrieve(url, MODEL_PATH)
     print("✅ Model downloaded!")
 
-# Then load
-from insightface.model_zoo.inswapper import INSwapper
+# === Initialize Face Swapper ===
 swapper = INSwapper(MODEL_PATH)
-
-app = Flask(__name__)
-
-
-UPLOAD_FOLDER = 'uploads'
-RESULT_FOLDER = 'results'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(RESULT_FOLDER, exist_ok=True)
-
 face_app = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
 face_app.prepare(ctx_id=0)
-MODEL_DIR = os.path.expanduser("~/.insightface/models/")
-swapper = INSwapper(os.path.join(MODEL_DIR, "inswapper_128.onnx"))
 
+# === Authentication Decorator ===
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -49,6 +51,8 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated
+
+# === Routes ===
 
 @app.route('/')
 def home():
@@ -127,11 +131,7 @@ def api_gallery():
     results = cur.fetchall()
     conn.close()
 
-    data = [{
-        'path': path,
-        'timestamp': timestamp
-    } for path, timestamp in results]
-
+    data = [{'path': path, 'timestamp': timestamp} for path, timestamp in results]
     return jsonify(data)
 
 @app.route('/preview')
@@ -202,32 +202,19 @@ def login():
 def logout():
     session.clear()
     return redirect('/login')
-    
-# === Database Initialization ===
+
+# === DB Setup ===
 def init_db():
     conn = sqlite3.connect("users.db")
     cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            email TEXT PRIMARY KEY,
-            password TEXT
-        )
-    """)
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS history (
-            email TEXT,
-            result_path TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+    cur.execute("CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY, password TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS history (email TEXT, result_path TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
     conn.commit()
     conn.close()
 
 init_db()
 
-import os
-
+# === Run Server ===
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 4242))  # fallback for local
+    port = int(os.environ.get('PORT', 4242))
     app.run(debug=True, host='0.0.0.0', port=port)
-
